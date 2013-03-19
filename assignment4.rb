@@ -28,7 +28,7 @@ class Course
     @course_name = course_name
 		@themes = concepts.map { |concept| Theme.new(concept) }
     @sessions = dates.each_with_index.map { |d,i| Session.new(i+3, dates[i]) }
-    @participants = names.map { |name| Participant.new(name, "YELLOW") }
+    @participants = names.map { |name| Participant.new(name) }
   end
  
   def change_preference(options)
@@ -84,69 +84,40 @@ end
 class Participant
   attr_accessor :preference
   attr_accessor :name
-  
-  def initialize(name, preference = nil, favorite_color)
+  attr_accessor :profile
+
+  def initialize(name, preference = nil, pd = $dan_data)
     @name = name
-		@profile = Profile.new(1)
+    @profile = Profile.new(pd[:full_name], pd[:email], pd[:id]) if pd && name == "Dan"
     @preference = preference
-    @favorite_color = change_color(favorite_color)
   end
   
-  def change_color(favorite_color)
-    return "black"
-    puts "#{ name }'s favorite color is now #{ favorite_color }"
+  def to_s
+    name
   end
+end
+
+class Theme < Struct.new(:name, :description)
 
 	def to_s
-		name
+	  "#{ name }"
 	end
+
 end
 
-class Theme
-	attr_accessor :description
-	attr_reader :name
-
-	def initialize(name, description = "This theme is still undefined. Please write a description.")
-		@name = name
-		@description = description
-	end
-
+class Profile < Struct.new(:full_name, :email, :id)
+	
 	def to_s
-		"#{ name }: #{ description }"
+		"#{ full_name } #{ email } #{ id }"
 	end
+
 end
 
-class Profile
-	def initialize(id)
-		@id = id
-	end
-end
-
-# Juliana's Code
-
-# dan_data = {
-# 	"full name" => "Dan Craig",
-# 	"e-mail" => "dan.craig@uva.nl",
-# 	"id" => "101045"
-# }
-#  
-# participantsdata = [ dan_data ]
-
-# 	attr_accessor :fullname, :email, :id
-# 	def self.initialize(full_name, e_mail, id)
-# 		@full_name = fullname
-# 		@e_mail = email
-# 		@id = id 
-# 	end
-# end
-#  
-# def participantsdata (data)
-# 	full = data ["full name"]
-# 	email = data ["e-mail"]
-# 	id = data ["id"]
-# 	
-# 	puts full + "	" + email + "	" + id
-# end
+$dan_data = {
+	full_name: "Dan Craig",
+	email: "dan.craig@uva.nl",
+	id: "101045"
+}
 #  
 # data = Data.new("Dan Craig")
 
